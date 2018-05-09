@@ -15,6 +15,8 @@ class IWindowsInjector():
 
 	def triggerVulnerability(self, length):
 		"""
+		Currently, Windows injection is still a WIP.
+		Stay tuned. For now, use Linux or MacOS.
 		"""
 		print("Triggering vulnerability...")
 		return
