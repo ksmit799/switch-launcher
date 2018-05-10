@@ -28,7 +28,9 @@ POPUP_ERROR = {
 	'NoBackend': "You must install a native usb backend for your system. More info on the GitHub repository.",
 	'UnableToLocate': "Unable to locate a connected Nintendo Switch. Try plugging it into a USB 3 port.",
 	'PayloadTooBig': "Selected payload is too large to be submitted via RCM.",
-	'UnknownError': "An unknown error occured while triggering the exploit. Please try again with possibly a different payload."
+	'UnknownError': "An unknown error occured while triggering the exploit. Please try again with possibly a different payload.",
+	'UnsupportedPlatform': "The platform you are attempting to run Switch Launcher on is currently not supported.",
+	'LinuxInvalidEnvironment': "The switch needs to be on an XHCI backend. Usually that means plugged into a blue USB 3.0 port!"
 }
 
 POPUP_INFO = {

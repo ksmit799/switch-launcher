@@ -19,4 +19,5 @@ class IWindowsInjector():
 		Stay tuned. For now, use Linux or MacOS.
 		"""
 		print("Triggering vulnerability...")
+		self.parent.processError('UnsupportedPlatform')
 		return

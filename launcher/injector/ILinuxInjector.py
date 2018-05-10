@@ -66,6 +66,7 @@ class ILinuxInjector():
 		isValid = self.validateEnvironment()
 		if not isValid:
 			print("error: The switch needs to be on an XHCI backend. Usually that means plugged into a blue USB 3.0 port!")
+			self.parent.processError('LinuxInvalidEnvironment')
 			return
 
 		# Figure out the USB device file we're going to use to issue the control request.

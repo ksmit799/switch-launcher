@@ -19,7 +19,7 @@ class PayloadInjector(threading.Thread):
 		threading.Thread.__init__(self)
 
 		self.parent = parent
-		self.injector = None
+		self.nativeInjector = None
 
 		# Injector specific vars.
 		self.currentBuffer = 0
@@ -37,22 +37,22 @@ class PayloadInjector(threading.Thread):
 		pass
 
 	def run(self):
-		# Injector interface. OS specific.
+		# Native injector interface. OS specific.
 		osName = platform.system()
 
 		if osName == 'Windows':
-			self.injector = IWindowsInjector(self)
+			self.nativeInjector = IWindowsInjector(self)
 
 		# MacOS.
 		elif osName == 'Darwin':
-			self.injector = IDarwinInjector(self)
+			self.nativeInjector = IDarwinInjector(self)
 
 		elif osName == 'Linux':
-			self.injector = ILinuxInjector(self)
+			self.nativeInjector = ILinuxInjector(self)
 
 		else:
 			print("Running on an unknown OS... Defaulting to Linux.")
-			self.injector = ILinuxInjector()
+			self.nativeInjector = ILinuxInjector()
 
 	def runInjector(self):
 		"""
@@ -64,9 +64,7 @@ class PayloadInjector(threading.Thread):
 
 		if not intermezzoPath or not payloadPath:
 			print("Error: You must set both an Intermezzo path and a Payload path!")
-			self.reset()
-			self.parent.gui.popupError('VarsNotSet')
-			self.parent.gui.returnInput()
+			self.processError('VarsNotSet')
 			return
 
 		# Get a connection to the (possibly) connected Nintendo Switch.
@@ -76,16 +74,12 @@ class PayloadInjector(threading.Thread):
 		# Incase the libusb native hasn't been installed.
 		except usb.core.NoBackendError as backendError:
 			print(backendError)
-			self.reset()
-			self.parent.gui.popupError('NoBackend')
-			self.parent.gui.returnInput()
+			self.processError('NoBackend')
 			return
 
 		if self.usbDevice is None:
 			print("Error: Unable to locate connected Nintendo Switch...")
-			self.reset()
-			self.parent.gui.popupError('UnableToLocate')
-			self.parent.gui.returnInput()
+			self.processError('UnableToLocate')
 			return
 
 		# Retrieve and print the device's ID.
@@ -146,9 +140,7 @@ class PayloadInjector(threading.Thread):
 		if len(payload) > length:
 			sizeOver = len(payload) - length
 			print("Error: Payload is too large to be submitted via RCM. ((%s) bytes larger than max)." % sizeOver)
-			self.reset()
-			self.parent.gui.popupError('PayloadTooBig')
-			self.parent.gui.returnInput()
+			self.processError('PayloadTooBig')
 			return
 
 		# Send the constructed payload which contains: the command, stack smashing values,
@@ -171,18 +163,14 @@ class PayloadInjector(threading.Thread):
 		except IOError:
 			print("Lost connection to the Switch... (THIS IS NOT AN ERROR! Unless you've unplugged it).")
 			print("SUCCESS! The exploit has been triggered and you can now safely unplug your Switch!")
-			self.reset()
-			self.parent.gui.popupInfo('SuccessfulExploit')
-			self.parent.gui.returnInput()
+			self.processInfo('SuccessfulExploit')
 			return
 
 		# Any other exception is unknown.
 		except Exception as e:
 			print(e)
 			print("Error: An unknown error occured while triggering the exploit...")
-			self.reset()
-			self.parent.gui.popupError('UnknownError')
-			self.parent.gui.returnInput()
+			self.processError('UnknownError')
 			return
 
 	def read(self, length):
@@ -268,4 +256,14 @@ class PayloadInjector(threading.Thread):
 		if length is None:
 			length = InjectorGlobals.STACK_END - self.getCurrentBufferAddress()
 
-		return self.injector.triggerVulnerability(length)
+		return self.nativeInjector.triggerVulnerability(length)
+
+	def processError(self, message):
+		self.reset()
+		self.parent.gui.popupError(message)
+		self.parent.gui.returnInput()
+
+	def processInfo(self, message):
+		self.reset()
+		self.parent.gui.popupInfo(message)
+		self.parent.gui.returnInput()
