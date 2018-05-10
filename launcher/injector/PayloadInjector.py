@@ -86,7 +86,7 @@ class PayloadInjector(threading.Thread):
 		# NOTE: We have to read the first 16 anyways before we can proceed.
 		deviceID = self.readDeviceID()
 		print("Nintendo Switch with device ID: (%s) located!" % deviceID)
-		self.parent.gui.setDeviceID(deviceID)
+		self.parent.gui.setDeviceID(hex(deviceID))
 
 		# Use the maximum length accepted by RCM, so we can transmit as much payload as
 		# we want; we'll take over before we get to the end.
