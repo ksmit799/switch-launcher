@@ -7,6 +7,7 @@
 import os
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
 from launcher.globals import GUIGlobals
 from launcher.globals import LauncherGlobals
@@ -75,7 +76,7 @@ class LauncherGUI(tk.Tk):
 		self.payloadButton = ttk.Button(self.mainFrame, text=GUIGlobals.CHOOSE_PAYLOAD, command=self.openPayloadSelector, style="B.TButton")
 
 		# The start button.
-		self.startButton = ttk.Button(self.mainFrame, text=GUIGlobals.START, command=None, style="B.TButton")
+		self.startButton = ttk.Button(self.mainFrame, text=GUIGlobals.START, command=self.runInjector, style="B.TButton")
 		
 		self.mainFrame.pack(fill=tk.BOTH, expand=1)
 
@@ -92,10 +93,23 @@ class LauncherGUI(tk.Tk):
 		self.mainloop()
 
 	def blockInput(self):
-		pass
+		self.intermezzoButton.config(state=tk.DISABLED)
+		self.payloadButton.config(state=tk.DISABLED)
+		self.startButton.config(state=tk.DISABLED)
 
 	def returnInput(self):
-		pass
+		self.intermezzoButton.config(state=tk.NORMAL)
+		self.payloadButton.config(state=tk.NORMAL)
+		self.startButton.config(state=tk.NORMAL)
+
+	def popupError(self, message):
+		messagebox.showerror("Error", GUIGlobals.POPUP_ERROR[message])
+
+	def popupInfo(self, message):
+		messagebox.showinfo("Info", GUIGlobals.POPUP_INFO[message])
+
+	def setDeviceID(self, id):
+		self.deviceIDVar.set(GUIGlobals.DEVICE_ID % id)
 
 	def openIntermezzoSelector(self):
 		# Block button input.
@@ -122,7 +136,14 @@ class LauncherGUI(tk.Tk):
 		# They've selected a valid bin file. Update our vars.
 		self.intermezzoPathVar.set(GUIGlobals.INTERMEZZO % os.path.basename(filePath))
 
-		print(fileName)
+		# Print filepath.
+		print(filePath)
+
+		# Set intermezzo path.
+		self.parent.intermezzoPath = filePath
+
+		# Re-enable button input.
+		self.returnInput()
 
 	def openPayloadSelector(self):
 		# Block button input.
@@ -149,4 +170,15 @@ class LauncherGUI(tk.Tk):
 		# They've selected a valid bin file. Update our vars.
 		self.payloadPathVar.set(GUIGlobals.PAYLOAD % os.path.basename(filePath))
 
-		print(fileName)
+		# Print filepath.
+		print(filePath)
+
+		# Set payload path.
+		self.parent.payloadPath = filePath
+
+		# Re-enable button input.
+		self.returnInput()
+
+	def runInjector(self):
+		self.blockInput()
+		self.parent.injector.runInjector()

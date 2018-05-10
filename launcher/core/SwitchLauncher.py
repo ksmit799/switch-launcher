@@ -14,6 +14,9 @@ class SwitchLauncher():
 		self.injector = PayloadInjector(self)
 		self.gui = LauncherGUI(self)
 
+		self.intermezzoPath = None
+		self.payloadPath = None
+
 		print("Switch Launcher now running. Version: %s" % LauncherGlobals.CURR_VERSION)
 
 		self.gui.run()

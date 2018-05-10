@@ -7,6 +7,7 @@
 import threading
 import tkinter
 import platform
+import usb
 from launcher.globals import InjectorGlobals
 from launcher.injector.IWindowsInjector import IWindowsInjector
 from launcher.injector.IDarwinInjector import IDarwinInjector
@@ -53,22 +54,45 @@ class PayloadInjector(threading.Thread):
 			print("Running on an unknown OS... Defaulting to Linux.")
 			self.injector = ILinuxInjector()
 
-	def runInjector(self, intermezzoPath, payloadPath):
+	def runInjector(self):
 		"""
 		Run the injector.
 		"""
 
+		intermezzoPath = self.parent.intermezzoPath
+		payloadPath = self.parent.payloadPath
+
+		if not intermezzoPath or not payloadPath:
+			print("Error: You must set both an Intermezzo path and a Payload path!")
+			self.reset()
+			self.parent.gui.popupError('VarsNotSet')
+			self.parent.gui.returnInput()
+			return
+
 		# Get a connection to the (possibly) connected Nintendo Switch.
-		self.usbDevice = self.findUSBDevice()
+		try:
+			self.usbDevice = self.findUSBDevice()
+
+		# Incase the libusb native hasn't been installed.
+		except usb.core.NoBackendError as backendError:
+			print(backendError)
+			self.reset()
+			self.parent.gui.popupError('NoBackend')
+			self.parent.gui.returnInput()
+			return
 
 		if self.usbDevice is None:
 			print("Error: Unable to locate connected Nintendo Switch...")
+			self.reset()
+			self.parent.gui.popupError('UnableToLocate')
+			self.parent.gui.returnInput()
 			return
 
 		# Retrieve and print the device's ID.
 		# NOTE: We have to read the first 16 anyways before we can proceed.
 		deviceID = self.readDeviceID()
 		print("Nintendo Switch with device ID: (%s) located!" % deviceID)
+		self.parent.gui.setDeviceID(deviceID)
 
 		# Use the maximum length accepted by RCM, so we can transmit as much payload as
 		# we want; we'll take over before we get to the end.
@@ -121,8 +145,11 @@ class PayloadInjector(threading.Thread):
 		# If it won't, error out.
 		if len(payload) > length:
 			sizeOver = len(payload) - length
-			print("error: Payload is too large to be submitted via RCM. ((%s) bytes larger than max)." % sizeOver)
-			exit(1)
+			print("Error: Payload is too large to be submitted via RCM. ((%s) bytes larger than max)." % sizeOver)
+			self.reset()
+			self.parent.gui.popupError('PayloadTooBig')
+			self.parent.gui.returnInput()
+			return
 
 		# Send the constructed payload which contains: the command, stack smashing values,
 		# Intermezzo relocation stub, and the final payload.
@@ -139,15 +166,24 @@ class PayloadInjector(threading.Thread):
 		try:
 			self.triggerControlledMemcpy()
 
-		except ValueError as e:
-			print(str(e))
-			print("error: An error occured while triggering the exploit...")
-
 		# This isn't an error! We've made the device stop responding.
 		# (Unless they've unplugged it, we've injected the payload and triggered the exploit).
 		except IOError:
 			print("Lost connection to the Switch... (THIS IS NOT AN ERROR! Unless you've unplugged it).")
 			print("SUCCESS! The exploit has been triggered and you can now safely unplug your Switch!")
+			self.reset()
+			self.parent.gui.popupInfo('SuccessfulExploit')
+			self.parent.gui.returnInput()
+			return
+
+		# Any other exception is unknown.
+		except Exception as e:
+			print(e)
+			print("Error: An unknown error occured while triggering the exploit...")
+			self.reset()
+			self.parent.gui.popupError('UnknownError')
+			self.parent.gui.returnInput()
+			return
 
 	def read(self, length):
 		"""
