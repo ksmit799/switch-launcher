@@ -109,7 +109,7 @@ class LauncherGUI(tk.Tk):
 		messagebox.showinfo("Info", GUIGlobals.POPUP_INFO[message])
 
 	def setDeviceID(self, id):
-		self.deviceIDVar.set(GUIGlobals.DEVICE_ID % id)
+		self.deviceIDVar.set(GUIGlobals.DEVICE_ID_HEX % id)
 
 	def openIntermezzoSelector(self):
 		# Block button input.

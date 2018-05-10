@@ -4,6 +4,7 @@
  * Injector based on reswitched/fusee-launcher.
 """
 
+import os
 import threading
 import tkinter
 import platform
@@ -62,7 +63,7 @@ class PayloadInjector(threading.Thread):
 		intermezzoPath = self.parent.intermezzoPath
 		payloadPath = self.parent.payloadPath
 
-		if not intermezzoPath or not payloadPath:
+		if not os.path.isfile(intermezzoPath) or not os.path.isfile(payloadPath):
 			print("Error: You must set both an Intermezzo path and a Payload path!")
 			self.processError('VarsNotSet')
 			return
@@ -85,8 +86,10 @@ class PayloadInjector(threading.Thread):
 		# Retrieve and print the device's ID.
 		# NOTE: We have to read the first 16 anyways before we can proceed.
 		deviceID = self.readDeviceID()
-		print("Nintendo Switch with device ID: (%s) located!" % hex(deviceID))
-		self.parent.gui.setDeviceID(hex(deviceID))
+		deviceIDHex = int.from_bytes(bytes(deviceID), byteorder='little')
+
+		print("Nintendo Switch with device ID: (%#x) located!" % deviceIDHex)
+		self.parent.gui.setDeviceID(deviceIDHex)
 
 		# Use the maximum length accepted by RCM, so we can transmit as much payload as
 		# we want; we'll take over before we get to the end.
@@ -164,14 +167,12 @@ class PayloadInjector(threading.Thread):
 			print("Lost connection to the Switch... (THIS IS NOT AN ERROR! Unless you've unplugged it).")
 			print("SUCCESS! The exploit has been triggered and you can now safely unplug your Switch!")
 			self.processInfo('SuccessfulExploit')
-			return
 
 		# Any other exception is unknown.
 		except Exception as e:
 			print(e)
 			print("Error: An unknown error occured while triggering the exploit...")
 			self.processError('UnknownError')
-			return
 
 	def read(self, length):
 		"""

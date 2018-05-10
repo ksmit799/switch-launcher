@@ -16,6 +16,7 @@ WINDOW_TITLE = "Switch Launcher [%s]"
 VAR_NOT_SET = "None"
 
 DEVICE_ID = "Device ID: %s"
+DEVICE_ID_HEX = "Device ID: %#x"
 INTERMEZZO = "Selected Intermezzo: %s"
 PAYLOAD = "Selected Payload: %s"
 START = "Connect and Inject"
