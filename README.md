@@ -2,6 +2,9 @@
 
 Switch Launcher is a desktop GUI application for injecting custom payloads into Tegra X1 devices (specifically, the Nintendo Switch). The specifics of the exploit can be found in several write ups from sources such as ReSwitched, fail0verflow, etc. In short, once the device has been put into RCM mode (we have USB access) we are able to inject arbitrary unsigned code into the bootROM. This opens up the possibility of CFW (Custom Firmware) and Homebrew. Unless you make changes to the Switch's operating system itself (or within its scope), Nintendo will never be the wiser to the fact that you have made use of this exploit.
 
+## Pre-built Intermezzo and Payload
+You can download a pre-built Intermezzo.bin [here](http://www.mediafire.com/file/693vuh9l09ihqvq/intermezzo.bin) and a pre-built payload (fusee.bin) [here](http://www.mediafire.com/file/eoz7xji3n32rzly/fusee.bin). Simply replace fusee.bin with a custom payload if you have one you want to use.
+
 ## Requirements
 
 #### Python 3
