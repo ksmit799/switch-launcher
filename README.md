@@ -8,7 +8,7 @@ Switch Launcher is a desktop GUI application for injecting custom payloads into 
 Switch Launcher has been developed to work with Python 3 **ONLY**. You can download Python 3 [here](https://www.python.org/downloads/). If you are not a developer however, you can just download a pre-built binary for your respective system from below.
 
 #### Python Requirements
-You can install all the requirements that Python itself requires by issuing the following command (while at the root of the repo).
+You can install all the requirements that Python itself requires by executing the following command (while at the root of the repo).
 ```
 pip install -r requirements.txt
 ```
@@ -20,13 +20,16 @@ PyUSB requires a backend in order to function properly. These backends are OS sp
 TODO
 
 ##### MacOS
-Once you have brew installed (you can install it [here](https://brew.sh)) you can issue the following command.
+Once you have brew installed (you can install it [here](https://brew.sh)) you can execute the following command.
 ```
 brew install libusb
 ```
 
 ##### Linux
-TODO
+From terminal, you can execute the following command.
+```
+sudo apt-get install libusb-1.0-0-dev
+```
 
 ## Pre-built Binaries
 Pre-built binaries will be available soon.
