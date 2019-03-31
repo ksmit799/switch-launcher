@@ -1,4 +1,4 @@
-# Switch Launcher ![](https://img.shields.io/badge/release-0.1.0-green.svg) ![](https://img.shields.io/github/issues/Trapdoor-NX/switch-launcher.svg) ![](https://img.shields.io/github/license/Trapdoor-NX/switch-launcher.svg)
+# Switch Launcher ![](https://img.shields.io/badge/release-0.1.0-green.svg) ![](https://img.shields.io/github/issues/ksmit799/switch-launcher.svg) ![](https://img.shields.io/github/license/ksmit799/switch-launcher.svg)
 
 Switch Launcher is a desktop GUI application for injecting custom payloads into Tegra X1 devices (specifically, the Nintendo Switch). The specifics of the exploit can be found in several write ups from sources such as ReSwitched, fail0verflow, etc. In short, once the device has been put into RCM mode (we have USB access) we are able to inject arbitrary unsigned code into the bootROM. This opens up the possibility of CFW (Custom Firmware) and Homebrew. Unless you make changes to the Switch's operating system itself (or within its scope), Nintendo will never be the wiser to the fact that you have made use of this exploit.
 
@@ -14,6 +14,10 @@ Switch Launcher has been developed to work with Python 3 **ONLY**. You can downl
 You can install all the requirements that Python itself requires by executing the following command (while at the root of the repo).
 ```
 pip install -r requirements.txt
+```
+Please note that certain distros (such as Ubuntu) may require you to install Tkinter manually. To do this, issue the following command:
+```
+sudo apt-get install python3-tk
 ```
 
 #### Native Requirements
